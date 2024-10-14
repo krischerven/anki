@@ -472,7 +472,7 @@ class Collection(DeprecatedNamesMixin):
     # Object helpers
     ##########################################################################
 
-    def get_card(self, id: CardId) -> Card:
+    def get_card(self, id: CardId | None) -> Card:
         return Card(self, id)
 
     def update_cards(
@@ -1004,6 +1004,11 @@ class Collection(DeprecatedNamesMixin):
         """
         return self._backend.card_stats(card_id)
 
+    def get_review_logs(
+        self, card_id: CardId
+    ) -> Sequence[stats_pb2.CardStatsResponse.StatsRevlogEntry]:
+        return self._backend.get_review_logs(card_id)
+
     def studied_today(self) -> str:
         return self._backend.studied_today()
 
@@ -1152,8 +1157,12 @@ class Collection(DeprecatedNamesMixin):
         "Not intended for public consumption at this time."
         return self._backend.render_markdown(markdown=text, sanitize=sanitize)
 
-    def compare_answer(self, expected: str, provided: str) -> str:
-        return self._backend.compare_answer(expected=expected, provided=provided)
+    def compare_answer(
+        self, expected: str, provided: str, combining: bool = True
+    ) -> str:
+        return self._backend.compare_answer(
+            expected=expected, provided=provided, combining=combining
+        )
 
     def extract_cloze_for_typing(self, text: str, ordinal: int) -> str:
         return self._backend.extract_cloze_for_typing(text=text, ordinal=ordinal)
